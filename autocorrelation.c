@@ -24,7 +24,8 @@ int main(int argc, char **argv) {
 	}
 	/*
 	 * Get the autocorrelation function for tau steps.
-	 * Make a buffer big enough so that as you read in data from file into the buffer, the data from tau steps ago is still in the buffer.
+	 * Make a buffer big enough so that as you read in data from file into the buffer, 
+	 * the data from tau steps ago is still in the buffer.
 	 * Average every piece of data for qk.
 	 * Average every piece of data squared for qk_sq.
 	 * There are tau fewer to average for qk_qkplustau.
