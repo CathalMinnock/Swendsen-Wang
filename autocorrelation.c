@@ -22,6 +22,13 @@ int main(int argc, char **argv) {
 				exit(1);
 		}
 	}
+	/*
+	 * Get the autocorrelation function for tau steps.
+	 * Make a buffer big enough so that as you read in data from file into the buffer, the data from tau steps ago is still in the buffer.
+	 * Average every piece of data for qk.
+	 * Average every piece of data squared for qk_sq.
+	 * There are tau fewer to average for qk_qkplustau.
+	 */
 	FILE *fp = fopen(input_filename, "r");
 	double qk = 0, qk_sq = 0, qk_qkplustau = 0;
 	double *buf = malloc( (tau+1) * sizeof(double));
