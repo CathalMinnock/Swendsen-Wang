@@ -130,40 +130,18 @@ void finalize() {
 
 int main(int argc, char *argv[])
 {
+	x_size = 8; y_size = 8; z_size = 8; q = 2; beta = 2.0; samples = 1000;
 	init(argc, argv);
 	int i;
-	for(i=0; i < 20; ++i) 
+	for(i=0; i < 100; ++i) 
 		sw_iterate();
 	for(i=0; i < samples; ++i) {
 		sw_iterate();
 		magnetization();
 		if(rank == root)
-			printf("Magnetization = %lf\n", mag);
-		/*
-		if(rank == 3) {
-			printf("==========Rank %i: Bond Configuration===========\n", rank);
-			print_grid_bond_x();
-		}
-		MPI_Barrier(CART_COMM);
-		MPI_Barrier(CART_COMM);
-		if(rank == 7) {
-			printf("==========Rank %i: Bond Configuration===========\n", rank);
-			print_grid_bond_x();
-		}
-		MPI_Barrier(CART_COMM);
-		MPI_Barrier(CART_COMM);
-		if(rank == 3) {
-			printf("==========Rank %i: Label Configuration===========\n", rank);
-			print_grid_labels();
-		}
-		MPI_Barrier(CART_COMM);
-		MPI_Barrier(CART_COMM);
-		if(rank == 7) {
-			printf("==========Rank %i: Label Configuration===========\n", rank);
-			print_grid_labels();
-		}
-		*/
+			fprintf(fp, "%lf\n", mag);
 	}
 	finalize();
 	return 0;
+	}
 }
