@@ -143,5 +143,4 @@ int main(int argc, char *argv[])
 	}
 	finalize();
 	return 0;
-	}
 }

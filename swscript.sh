@@ -19,6 +19,7 @@ rm -r $directory_name
 mkdir $directory_name
 module load cports
 module load openmpi
+make
 for ((i = 0; i <= $temps; i++ ))
   do
     echo "HELLO" 
@@ -38,13 +39,14 @@ for ((i = 0; i <= $temps; i++ ))
  done
  
 beta=$beta_start
+max_tau=30
 gcc -Wall -o autocorrelation_prog autocorrelation.c
 for ((i = 0; i <= $temps; i++ ))
   do 
     input_filename="${directory_name}/${directory_name}_beta_${beta}.txt"
     output_filename="${directory_name}/${directory_name}_beta_${beta}_autocorrelation.txt"
     rm $output_filename
-    for((j = 0; j <= 30; j++ ))
+    for((j = 0; j <= $max_tau; j++ ))
       do
     	./autocorrelation_prog -i $input_filename -o $output_filename -t $j
       done
