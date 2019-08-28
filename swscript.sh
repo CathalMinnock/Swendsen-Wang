@@ -1,11 +1,12 @@
 #!/bin/sh
-#SBATCH -n 16
-#SBATCH -t 1:00:00
+#SBATCH -n 8
+#SBATCH -t 6:00:00
 #SBATCH -p compute
-#SBATCH -J q3s16n16
+#SBATCH -J FINALq3s16n8
 
-n=16
+n=8
 samples=10000
+skip_steps=50
 q=3
 size=16
 temps=40
@@ -23,7 +24,7 @@ for ((i = 0; i <= $temps; i++ ))
   do
     echo "HELLO" 
     filename="${directory_name}/${directory_name}_beta_${beta}.txt"
-    mpirun -n $n ./swprog -x $size -y $size -z $size -q $q -b $beta -f $filename -s $samples
+    mpirun -n $n ./swprog -x $size -y $size -z $size -q $q -b $beta -f $filename -s $samples -a $skip_steps
     beta=`echo "scale=4; $beta+$beta_increment" | bc`
  done
  

@@ -7,7 +7,7 @@ void init(int argc, char *argv[])
 	int option_index = 0;
 	x_size = 8; y_size = 8; z_size = 8; 
 	q = 2; beta = 0.4; filename = "apple.txt";
-	samples = 1;
+	samples = 1; steps_between_samples = 1;
 	while((option_index = getopt(argc, argv, "x:y:z:q:b:s:f:" )) != -1) {
 		switch(option_index) {
 			case 'x':
@@ -28,6 +28,9 @@ void init(int argc, char *argv[])
 			case 's':
 				samples = atoi(optarg);
 				break;
+                        case 'a':
+                                steps_between_samples = atoi(optarg);
+                                break;
 			case 'f':
 				filename = optarg;
 				break;
@@ -130,13 +133,13 @@ void finalize() {
 
 int main(int argc, char *argv[])
 {
-	x_size = 8; y_size = 8; z_size = 8; q = 2; beta = 2.0; samples = 1000;
 	init(argc, argv);
-	int i;
-	for(i=0; i < 100; ++i) 
+	int i,j;
+	for(i=0; i < steps_between_samples * 10; ++i) 
 		sw_iterate();
 	for(i=0; i < samples; ++i) {
-		sw_iterate();
+		for(j=0; j < steps_between_samples; ++j)
+			sw_iterate();
 		magnetization();
 		if(rank == root)
 			fprintf(fp, "%lf\n", mag);
