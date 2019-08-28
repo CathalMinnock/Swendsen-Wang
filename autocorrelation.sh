@@ -18,7 +18,7 @@ for ((i = 0; i <= $temps; i++ ))
     rm $output_filename
     for((j = 0; j <= 30; j++ ))
       do
-    	./autocorrelation_prog -i $input_filename -o $output_filename -t $j
+    	python autocorrelation.py $input_filename $output_filename $j
       done
     beta=`echo "scale=4; $beta+$beta_increment" | bc`
  done
