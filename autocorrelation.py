@@ -3,7 +3,7 @@ import sys
 
 filename = sys.argv[1]
 output_filename = sys.argv[2]
-tau = sys.argv[3]
+tau = int(sys.argv[3])
 
 data = np.loadtxt(filename, unpack = True)
 N = len(data)
