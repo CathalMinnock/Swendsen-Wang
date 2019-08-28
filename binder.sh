@@ -4,9 +4,10 @@ n=4
 q=2
 size=16
 temps=40
-beta_start=0
-beta_end=1
-beta_increment=`echo "scale=4; $beta_end/$temps" | bc`
+beta_start=.2250
+beta_end=.3250
+beta_diff=`echo "scale=4; $beta_end-$beta_start" | bc`
+beta_increment=`echo "scale=4; $beta_diff/$temps" | bc`
 directory_name="SW_q_${q}_size_${size}_n_${n}"
 
 beta=$beta_start
