@@ -48,6 +48,7 @@ int main(int argc, char **argv) {
 	qk_qkplustau /= i - tau;
 	
 	double autocorrelation = (qk_qkplustau - qk * qk) / (qk_sq - qk * qk);
+	printf("%lf\n", autocorrelation);
 	fp = fopen(output_filename, "a");
 	fprintf(fp, "%d %lf\n", tau, autocorrelation);
 	fclose(fp);
