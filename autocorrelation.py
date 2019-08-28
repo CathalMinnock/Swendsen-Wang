@@ -19,5 +19,5 @@ for i in range(N-tau, N):
 autocorrelation = top / bottom
 
 f=open(output_filename, "a+")
-f.write(str(tau) + " " + str(autocorrelation))
+f.write(str(tau) + " " + str(autocorrelation) + "\n")
 f.close() 

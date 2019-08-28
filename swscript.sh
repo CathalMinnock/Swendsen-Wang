@@ -38,7 +38,6 @@ for ((i = 0; i <= $temps; i++ ))
  done
  
 beta=$beta_start
-gcc -Wall -o autocorrelation_prog autocorrelation.c
 for ((i = 0; i <= $temps; i++ ))
   do 
     input_filename="${directory_name}/${directory_name}_beta_${beta}.txt"
