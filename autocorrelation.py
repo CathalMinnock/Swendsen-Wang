@@ -11,10 +11,10 @@ mean = np.mean(data)
 
 top = 0
 bottom = 0
-for i in range(N):
+for i in range(N-tau):
 	top += (data[i] - mean) * (data[i+tau] - mean)
 	bottom += (data[i] - mean)**2
-	if i >= (N-tau):
+for i in range(N-tau, N):
 		bottom += (data[i] - mean)**2
 top /= (N-tau)
 bottom /= N
