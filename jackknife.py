@@ -1,10 +1,11 @@
 import numpy as np
 import sys
 
-filename = sys.argv[1]
+input_filename = sys.argv[1]
 output_filename = sys.argv[2]
 beta = sys.argv[3]
-f = open(filename, "r")
+
+f = open(input_filename, "r")
 f1 = f.readlines()
 total = 0
 samples_count = 0
@@ -13,7 +14,7 @@ for x in f1:
 	samples_count += 1
 f.close()
 
-f = open(filename, "r")
+f = open(input_filename, "r")
 f1 = f.readlines()
 estimates = np.zeros(samples_count)
 i=0
