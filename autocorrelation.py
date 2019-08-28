@@ -16,7 +16,5 @@ for i in range(N-tau):
 	bottom += (data[i] - mean)**2
 for i in range(N-tau, N):
 		bottom += (data[i] - mean)**2
-top /= (N-tau)
-bottom /= N
 autocorrelation = top / bottom
 print(autocorrelation)
