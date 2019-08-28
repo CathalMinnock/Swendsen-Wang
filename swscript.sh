@@ -21,6 +21,7 @@ rm -r $directory_name
 mkdir $directory_name
 module load cports
 module load openmpi
+make
 for ((i = 0; i <= $temps; i++ ))
   do
     echo "HELLO" 
