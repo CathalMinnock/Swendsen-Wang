@@ -8,7 +8,7 @@ void init(int argc, char *argv[])
 	x_size = 8; y_size = 8; z_size = 8; 
 	q = 2; beta = 0.4; filename = "apple.txt";
 	samples = 1; steps_between_samples = 1;
-	while((option_index = getopt(argc, argv, "x:y:z:q:b:s:f:" )) != -1) {
+	while((option_index = getopt(argc, argv, "x:y:z:q:b:s:f:a:" )) != -1) {
 		switch(option_index) {
 			case 'x':
 				x_size = atoi(optarg);
