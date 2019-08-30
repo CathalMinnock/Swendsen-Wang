@@ -1,6 +1,6 @@
 OBJECTS = main.o grid.o 
-CC = mpicc
-CFLAGS = -Wall -lm
+CC = scorep mpicc
+CFLAGS = -Wall -lm -L 'home/support/apps/cports/rhel-6.x86_64/gnu/papi/5.6.0/lib'-lmpi
 EXEC = swprog
 
 make: $(OBJECTS)
