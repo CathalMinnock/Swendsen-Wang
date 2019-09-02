@@ -4,7 +4,7 @@ import numpy as np
 n=8
 q=3
 size=16
-directory_name="SW_q_" + str(q) + "_size_" + str(size) + "_n_" + str(n) + "therm_0"
+directory_name="SW_q_" + str(q) + "_size_" + str(size) + "_n_" + str(n) + "_therm_0"
 
 beta = ".2000"
 filename=directory_name + "/" + directory_name + "_beta_" + beta + ".txt"
