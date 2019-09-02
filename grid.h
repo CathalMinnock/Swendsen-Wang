@@ -51,6 +51,7 @@ char *filename;
 FILE *fp;
 int samples;
 int steps_between_samples;
+int thermalize_steps;
 
 point ***lattice; // The local 3D Lattice
 point **bottom, **right, **front; // Boundary planes

@@ -8,7 +8,7 @@ void init(int argc, char *argv[])
 	x_size = 8; y_size = 8; z_size = 8; 
 	q = 2; beta = 0.4; filename = "apple.txt";
 	samples = 1; steps_between_samples = 1;
-	while((option_index = getopt(argc, argv, "x:y:z:q:b:s:f:a:" )) != -1) {
+	while((option_index = getopt(argc, argv, "x:y:z:q:b:s:f:a:t:" )) != -1) {
 		switch(option_index) {
 			case 'x':
 				x_size = atoi(optarg);
@@ -28,9 +28,12 @@ void init(int argc, char *argv[])
 			case 's':
 				samples = atoi(optarg);
 				break;
-                        case 'a':
-                                steps_between_samples = atoi(optarg);
-                                break;
+            case 'a':
+                steps_between_samples = atoi(optarg);
+                break;
+            case 't':
+                thermalize_steps = atoi(optarg);
+                break;
 			case 'f':
 				filename = optarg;
 				break;
@@ -141,7 +144,7 @@ int main(int argc, char *argv[])
 {
 	init(argc, argv);
 	int i,j;
-	for(i=0; i < steps_between_samples * 10; ++i) 
+	for(i=0; i < thermalize_steps; ++i) 
 		sw_iterate();
 	for(i=0; i < samples; ++i) {
 		for(j=0; j < steps_between_samples; ++j)
