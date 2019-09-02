@@ -130,13 +130,13 @@ void finalize() {
 	free(displacements);
 	free(x_values);
 	free(y_values);
-	MPI_Type_free(&TB_BOUNDARY_PLANE);
-	MPI_Type_free(&FB_BOUNDARY_PLANE);
-	MPI_Type_free(&LR_BOUNDARY_PLANE);
-	MPI_Type_free(&TB_LATTICE_PLANE);
-	MPI_Type_free(&FB_LATTICE_PLANE);
-	MPI_Type_free(&LR_LATTICE_PLANE);
-	MPI_Type_free(&point_type);
+	//MPI_Type_free(&TB_BOUNDARY_PLANE);
+	//MPI_Type_free(&FB_BOUNDARY_PLANE);
+	//MPI_Type_free(&LR_BOUNDARY_PLANE);
+	//MPI_Type_free(&TB_LATTICE_PLANE);
+	//MPI_Type_free(&FB_LATTICE_PLANE);
+	//MPI_Type_free(&LR_LATTICE_PLANE);
+	//MPI_Type_free(&point_type);
 	MPI_Finalize();
 }
 
