@@ -20,9 +20,6 @@ beta=$beta_start
 directory_name="SW_q_${q}_size_${size}_n_${n}_therm_${thermalize_steps}"
 rm -r $directory_name
 mkdir $directory_name
-module load cports
-module load openmpi
-make
 for ((i = 0; i <= $temps; i++ ))
   do
     echo "HELLO" 
