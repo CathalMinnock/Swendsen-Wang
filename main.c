@@ -82,7 +82,6 @@ void init(int argc, char *argv[])
 	MPI_Type_vector(local_x_size * local_y_size, 1, local_z_size, point_type, &FB_LATTICE_PLANE);
 	MPI_Type_commit(&FB_LATTICE_PLANE);
 	
-	
 	// Create the local lattice, its boundary planes, and initialize them
 	create_local_grid();
 	send_lattice_to_boundaries();
@@ -128,6 +127,13 @@ void finalize() {
 	free(displacements);
 	free(x_values);
 	free(y_values);
+	MPI_Type_free(&TB_BOUNDARY_PLANE);
+	MPI_Type_free(&FB_BOUNDARY_PLANE);
+	MPI_Type_free(&LR_BOUNDARY_PLANE);
+	MPI_Type_free(&TB_LATTICE_PLANE);
+	MPI_Type_free(&FB_LATTICE_PLANE);
+	MPI_Type_free(&LR_LATTICE_PLANE);
+	MPI_Type_free(&point_type);
 	MPI_Finalize();
 }
 

@@ -24,7 +24,6 @@ void sw_iterate() {
 	send_lattice_to_boundaries();
 	setup_bond_configuration();
 	reduce_local_labels();
-	//send_lattice_to_boundaries(); //don't think this is necessary now
 	
 	total_finished = false;
 	while(total_finished == false) {
