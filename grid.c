@@ -25,8 +25,8 @@ void sw_iterate() {
 	setup_bond_configuration();
 	reduce_local_labels();
 	
-	total_finished = false;
-	while(total_finished == false) {
+	global_finished = false;
+	while(global_finished == false) {
 		local_finished = true;
 		
 		send_lattice_to_boundaries_x();
@@ -42,9 +42,8 @@ void sw_iterate() {
 		send_boundaries_to_lattice_z();
 		
 		reduce_local_labels();
-		MPI_Allreduce(&local_finished, &total_finished, 1, MPI_C_BOOL, MPI_LAND, CART_COMM);
+		MPI_Allreduce(&local_finished, &global_finished, 1, MPI_C_BOOL, MPI_LAND, CART_COMM);
 	}
-	
 	generate_rand_cluster_spins();
 	flip_clusters();
 }
@@ -54,7 +53,7 @@ void reset_lattice() {
 	for(i = 0; i < local_x_size; ++i)
 	for(j = 0; j < local_y_size; ++j)
 	for(k = 0; k < local_z_size; ++k) {
-		lattice[i][j][k].label = (i + s[0]) * (y_size * z_size) + (j + s[1]) * z_size + (k + s[2]);
+		lattice[i][j][k].label = (i + s[0]) * (y_size * z_size) + (j + s[1]) * z_size + (k + s[2]); // position in the global lattice
 		lattice[i][j][k].bond_x = false;
 		lattice[i][j][k].bond_y = false;
 		lattice[i][j][k].bond_z = false;
@@ -79,8 +78,6 @@ void setup_bond_configuration() {
 	}
 }
 
-// Needs to know bonds, updates labels
-// reduce cluster labels using just bonds between local points, NOT across boundaries
 void reduce_local_labels() {
 	int i, j, k;
 	bool finished = false;
@@ -193,7 +190,6 @@ void send_boundaries_to_lattice_z() {
 
 void reduce_boundary_labels_x() {
 	int j, k;
-	// Bottom boundary
 	for(j = 0; j < local_y_size; ++j)
 	for(k = 0; k < local_z_size; ++k) {
 		if(lattice[local_x_size - 1][j][k].bond_x) {
@@ -210,7 +206,6 @@ void reduce_boundary_labels_x() {
 }
 void reduce_boundary_labels_y() {
 	int i, k;
-	// Right boundary
 	for(i = 0; i < local_x_size; ++i)
 	for(k = 0; k < local_z_size; ++k) {
 		if(lattice[i][local_y_size - 1][k].bond_y) {
@@ -227,7 +222,6 @@ void reduce_boundary_labels_y() {
 }
 void reduce_boundary_labels_z() {
 	int i, j;
-	// Front boundary
 	for(i = 0; i < local_x_size; ++i)
 	for(j = 0; j < local_y_size; ++j) {
 		if(lattice[i][j][local_z_size - 1].bond_z) {
@@ -249,6 +243,7 @@ void generate_rand_cluster_spins() {
 		local_rand_spins[i] = rand() % q;
 	MPI_Allgatherv(local_rand_spins, recvcounts[rank], MPI_UNSIGNED_CHAR, rand_spins, recvcounts, displacements, MPI_UNSIGNED_CHAR, CART_COMM);
 }
+
 void flip_clusters() {
 	int i, j, k;
 	for(i = 0; i < local_x_size; ++i)
@@ -257,10 +252,9 @@ void flip_clusters() {
 		lattice[i][j][k].spin = rand_spins[ lattice[i][j][k].label ];
 	}
 }
-// Creates the 3D lattice, and the 3 boundary planes (for now I believe the other 3 are not needed)
-void create_local_grid()
-{	
-	bottom = create_2D_array(local_y_size, local_z_size);		
+
+void create_local_grid() {
+	bottom = create_2D_array(local_y_size, local_z_size);	
 	right = create_2D_array(local_x_size, local_z_size);	
 	front = create_2D_array(local_x_size, local_y_size);	
 	lattice = create_grid();
@@ -279,8 +273,6 @@ void free_2D_array(point **array, int rows) {
 	free(array);
 }
 
-// Builds in left / right and top / bottom boundary. Front and back boundary will need to be otherwise handled.
-// Initialises to random values.
 point ***create_grid() {
 	lattice = malloc( (local_x_size + 1) * sizeof(point **) );
 	point *lattice_data = malloc(local_x_size * local_y_size * local_z_size * sizeof(point) );
@@ -296,7 +288,7 @@ point ***create_grid() {
 		lattice[i][local_y_size] = right[i];
 	}
 	lattice[local_x_size] = bottom;
-	reset_lattice(); // init the labels and bonds
+	reset_lattice();
 	return lattice;
 }
 void free_grid() {
@@ -307,11 +299,13 @@ void free_grid() {
 	free(lattice);
 }
 
-// Figures out cart_dims[] for the processor
-// Figures out cart_coordinates[] for the processor
-// Figures out the start and end position for each processor in each direction: s[0], s[1], s[2], e[0], e[1], e[2]
 void decomp3d(int *s, int *e)
 {
+	/*
+	 * Finding a combination of a,b, and c such that a x b x c = nprocs
+	 * Start with 'a' as the cube root of the number of processors, rounded down.
+	 * If nprocs is a cubic number, then a,b,c will end up being the same, as desired.
+	 */
 	int a, b, c;
 	a = cbrt(nprocs);
 	while(a > 0) {
@@ -392,6 +386,30 @@ void print_grid_bond_x() {
 		for(i=0; i < local_x_size; ++i){
 			for(j=0; j < local_y_size; ++j)
 				printf("%i ", lattice[i][j][k].bond_x);
+			printf("\n");
+		}
+		printf("\n");
+	}
+}
+void print_grid_bond_y() {
+	int i,j,k;
+	for(k=0; k < local_z_size; ++k) {
+		printf("========== Rank %i: k = %i ==========\n", rank, k);
+		for(i=0; i < local_x_size; ++i){
+			for(j=0; j < local_y_size; ++j)
+				printf("%i ", lattice[i][j][k].bond_y);
+			printf("\n");
+		}
+		printf("\n");
+	}
+}
+void print_grid_bond_z() {
+	int i,j,k;
+	for(k=0; k < local_z_size; ++k) {
+		printf("========== Rank %i: k = %i ==========\n", rank, k);
+		for(i=0; i < local_x_size; ++i){
+			for(j=0; j < local_y_size; ++j)
+				printf("%i ", lattice[i][j][k].bond_z);
 			printf("\n");
 		}
 		printf("\n");

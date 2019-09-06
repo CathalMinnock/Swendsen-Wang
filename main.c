@@ -3,10 +3,9 @@
 void init(int argc, char *argv[])
 {
 	srand(time(NULL));
-	
 	int option_index = 0;
 	x_size = 8; y_size = 8; z_size = 8; 
-	q = 2; beta = 0.4; filename = "apple.txt";
+	q = 2; beta = 0.4; filename = "junkvals.txt";
 	samples = 1; steps_between_samples = 1;
 	while((option_index = getopt(argc, argv, "x:y:z:q:b:s:f:a:t:" )) != -1) {
 		switch(option_index) {
@@ -55,7 +54,7 @@ void init(int argc, char *argv[])
 	MPI_Cart_shift(CART_COMM, 0, 1, &top_p, &bottom_p);
 	MPI_Cart_shift(CART_COMM, 1, 1, &left_p, &right_p);
 	MPI_Cart_shift(CART_COMM, 2, 1, &back_p, &front_p);
-	root = nprocs - 1;
+	root = nprocs - 1; // root at the end for slightly better load balance, since it is the one with the smallest sub-lattice
 	
 	// Make an MPI Datatype for the point struct
 	MPI_Datatype point_type;
@@ -64,12 +63,10 @@ void init(int argc, char *argv[])
 	MPI_Aint exINT, exCHAR;
 	MPI_Type_extent(MPI_INT, &exINT);
 	MPI_Type_extent(MPI_UNSIGNED_CHAR, &exCHAR);
-	
 	MPI_Aint offsets[3] = {0, exINT, exINT + exCHAR};
 	MPI_Type_create_struct(3, blockcounts, offsets, oldtypes, &point_type);
 	MPI_Type_commit(&point_type);
 	
-
 	// Make MPI Datatypes for the boundary & lattice planes (top/bottom, front/back, left/right)
 	MPI_Type_vector(local_y_size * local_z_size, 1, 1, point_type, &TB_BOUNDARY_PLANE);
 	MPI_Type_commit(&TB_BOUNDARY_PLANE);
@@ -89,7 +86,10 @@ void init(int argc, char *argv[])
 	create_local_grid();
 	send_lattice_to_boundaries();
 	
-	// Label "lookup table"
+	// The rand_spins array is filled with N random numbers.
+	// The full array is needed on each processor, but they must be the same numbers on each.
+	// This is done by having each processor do a portion, then sending their portion to every other processor.
+	// A one dimensional decomposition of the array is done here.
 	recvcounts = malloc(nprocs * sizeof(int));
 	displacements = malloc(nprocs * sizeof(int));
 	int remainder = (x_size * y_size * z_size) % nprocs;
@@ -108,7 +108,7 @@ void init(int argc, char *argv[])
 	rand_spins = malloc(x_size * y_size * z_size * sizeof(unsigned char));
 	local_rand_spins = malloc(recvcounts[rank] * sizeof(unsigned char));
 	
-	// Pre-calculate all the sines and cosines I need beforehand
+	// Pre-calculate all the sines and cosines that are needed beforehand
 	x_values = malloc(q * sizeof(double));
 	y_values = malloc(q * sizeof(double));
 	for(i=0; i < q; ++i) {
@@ -130,13 +130,6 @@ void finalize() {
 	free(displacements);
 	free(x_values);
 	free(y_values);
-	//MPI_Type_free(&TB_BOUNDARY_PLANE);
-	//MPI_Type_free(&FB_BOUNDARY_PLANE);
-	//MPI_Type_free(&LR_BOUNDARY_PLANE);
-	//MPI_Type_free(&TB_LATTICE_PLANE);
-	//MPI_Type_free(&FB_LATTICE_PLANE);
-	//MPI_Type_free(&LR_LATTICE_PLANE);
-	//MPI_Type_free(&point_type);
 	MPI_Finalize();
 }
 
