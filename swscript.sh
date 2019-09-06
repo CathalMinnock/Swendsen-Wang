@@ -13,10 +13,10 @@ size=16
 temps=40
 beta_start=0
 beta_end=1
+
 beta_diff=`echo "scale=4; $beta_end-$beta_start" | bc`
 beta_increment=`echo "scale=4; $beta_diff/$temps" | bc`
 beta=$beta_start
-
 directory_name="SW_q_${q}_size_${size}_n_${n}_therm_${thermalize_steps}"
 rm -r $directory_name
 mkdir $directory_name
